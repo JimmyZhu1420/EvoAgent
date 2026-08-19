@@ -263,14 +263,20 @@ Invoke-RestMethod https://<公网域名>/health
 
 自动修复只覆盖可确定安全的规则，例如调试输出、`shell=True` 和硬编码 Python 凭据；结果始终提交到新的 `evoagent/fix-pr-*` 分支，不直接修改源分支。
 
-## 完整生产模式
+## PostgreSQL/Redis 容器模式
 
 ```powershell
 Copy-Item .env.example .env
+# 编辑 .env，至少设置以下三个值：
+# EVOAGENT_POSTGRES_PASSWORD（仅使用 URL-safe 字符）
+# EVOAGENT_AUTH_SECRET
+# EVOAGENT_BOOTSTRAP_ADMIN_PASSWORD
 docker compose up --build
 ```
 
-Compose 会启动 PostgreSQL、Redis 和 EvoAgent。未配置这两项时，项目自动退回 SQLite 与进程内线程队列，适合本地演示。
+Compose 会启动 PostgreSQL、Redis 和 EvoAgent，并拒绝使用空密码或仓库内置的固定凭据启动。
+该配置用于本地集成与演示，尚不代表经过容量、安全和高可用验证的生产部署。
+直接运行且未配置数据库与 Redis 时，项目自动退回 SQLite 与进程内线程队列。
 
 ## API
 
